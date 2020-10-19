@@ -12,7 +12,7 @@
     "clean": "rm -fr lib && mkdir lib && rm -fr types && mkdir types",
     "dev": "yarn clean && tsc --watch",
     "test": "mocha -r ts-node/register ./src/**/*.spec.ts",
-    "lint": "eslint './src/**/*' './example-app/**/*'",
+    "lint": "eslint './src/**/*'",
     "check:all": "yarn lint && yarn build && yarn test"
   },
   "husky": {
