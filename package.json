@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "private": false,
-  "repository": "git@github.com:SoftwareBrothers/admin-bro-upload.git",
+  "repository": "git@github.com:SoftwareBrothers/admin-bro-logger.git",
   "license": "MIT",
   "scripts": {
     "release": "semantic-release",
