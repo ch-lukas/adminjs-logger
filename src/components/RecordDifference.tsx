@@ -11,44 +11,6 @@ import {
 } from '@admin-bro/design-system';
 import styled from 'styled-components';
 
-const RecordDifference: FC<BasePropertyProps> = ({ record, property }) => {
-  const differences = JSON.parse(
-    (flat.unflatten(record?.params ?? {}) as any)?.[property.name] ?? {},
-  );
-  if (!differences) {
-    return null;
-  }
-  return (
-    <FormGroup>
-      <Label>{property.label}</Label>
-      <Table>
-        <Head>
-          <Cell>Property name</Cell>
-          <Cell>Before</Cell>
-          <Cell>After</Cell>
-        </Head>
-        <TableBody>
-          {Object.entries(
-            differences as Record<string, { before: string; after: string }>,
-          ).map(([propertyName, { before, after }]) => {
-            return (
-              <Row>
-                <Cell width={1 / 3}>{propertyName}</Cell>
-                <Cell color="red" width={1 / 3}>
-                  {JSON.stringify(before) || 'undefined'}
-                </Cell>
-                <Cell color="green" width={1 / 3}>
-                  {JSON.stringify(after) || 'undefined'}
-                </Cell>
-              </Row>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </FormGroup>
-  );
-};
-
 const Cell = styled(TableCell)`
   width: 100%;
   word-break: break-word;
@@ -66,5 +28,43 @@ const Table = styled(AdminTable)`
   position: unset;
   display: block;
 `;
+
+const RecordDifference: FC<BasePropertyProps> = ({ record, property }) => {
+  const differences = JSON.parse(
+    (flat.unflatten(record?.params ?? {}) as any)?.[property.name] ?? {}
+  );
+  if (!differences) {
+    return null;
+  }
+  return (
+    <FormGroup>
+      <Label>{property.label}</Label>
+      <Table>
+        <Head>
+          <Cell>Property name</Cell>
+          <Cell>Before</Cell>
+          <Cell>After</Cell>
+        </Head>
+        <TableBody>
+          {Object.entries(
+            differences as Record<string, { before: string; after: string }>
+          ).map(([propertyName, { before, after }]) => {
+            return (
+              <Row key={propertyName}>
+                <Cell width={1 / 3}>{propertyName}</Cell>
+                <Cell color="red" width={1 / 3}>
+                  {JSON.stringify(before) || 'undefined'}
+                </Cell>
+                <Cell color="green" width={1 / 3}>
+                  {JSON.stringify(after) || 'undefined'}
+                </Cell>
+              </Row>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </FormGroup>
+  );
+};
 
 export default RecordDifference;
