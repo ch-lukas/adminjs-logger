@@ -1,7 +1,7 @@
 {
   "name": "@admin-bro/logger",
   "version": "1.1.0",
-  "main": "build/index.js",
+  "main": "lib/index.js",
   "types": "types/index.d.ts",
   "private": false,
   "repository": "git@github.com:SoftwareBrothers/admin-bro-upload.git",
@@ -9,7 +9,7 @@
   "scripts": {
     "release": "semantic-release",
     "build": "tsc",
-    "clean": "rm -fr build && mkdir build && rm -fr types && mkdir types",
+    "clean": "rm -fr lib && mkdir lib && rm -fr types && mkdir types",
     "dev": "yarn clean && tsc --watch",
     "test": "mocha -r ts-node/register ./src/**/*.spec.ts",
     "lint": "eslint './src/**/*' './example-app/**/*'",

@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
     "target": "es2017",
     "esModuleInterop": true,
     "jsx": "preserve",
     "declaration": true,
-    "declarationDir": "./types",
+    "importHelpers": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
@@ -13,9 +12,8 @@
     "noImplicitThis": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "baseUrl": ".",
+    "baseUrl": "src",
+    "outDir": "lib",
+    "allowSyntheticDefaultImports": true,
   },
-  "include": [
-    "./src/**/*",
-  ],
 }

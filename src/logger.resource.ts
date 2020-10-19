@@ -1,9 +1,7 @@
-import AdminBro, { ResourceWithOptions } from 'admin-bro';
+import { ResourceWithOptions } from 'admin-bro';
+import { bundleComponents } from './components/bundle';
 
-export const RECORD_DIFFERENCE = AdminBro.bundle(
-  '../src/components/RecordDifference'
-);
-export const RECORD_LINK = AdminBro.bundle('../src/components/RecordLink');
+const { RECORD_DIFFERENCE, RECORD_LINK } = bundleComponents();
 
 export const createLoggerResource = ({
   resource,
