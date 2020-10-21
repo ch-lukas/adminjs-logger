@@ -17,5 +17,5 @@
     "declarationDir": "types",
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["test"]
+  "exclude": ["test", "lib", "types"]
 }

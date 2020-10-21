@@ -8,9 +8,8 @@
   "license": "MIT",
   "scripts": {
     "release": "semantic-release",
-    "build": "yarn clean && tsc",
-    "clean": "rm -rf lib && rm -rf lib",
-    "dev": "yarn clean && tsc --watch",
+    "build": "tsc",
+    "dev": "tsc --watch",
     "test": "jest",
     "lint": "eslint './src/**/*'",
     "check:all": "yarn lint && yarn build && yarn test"
