@@ -9,7 +9,7 @@
   "scripts": {
     "release": "semantic-release",
     "build": "yarn clean && tsc",
-    "clean": "rm -rf lib",
+    "clean": "rm -rf lib && rm -rf lib",
     "dev": "yarn clean && tsc --watch",
     "test": "jest",
     "lint": "eslint './src/**/*'",
