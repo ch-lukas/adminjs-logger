@@ -14,7 +14,8 @@
     "module": "commonjs",
     "baseUrl": "./",
     "outDir": "lib",
-    "allowSyntheticDefaultImports": true,
+    "declarationDir": "types",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": ["test"]
 }
