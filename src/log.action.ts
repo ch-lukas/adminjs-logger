@@ -22,14 +22,14 @@ export const createLogAction = ({
 ) => {
   const { currentAdmin, _admin } = context;
   const { params, method } = request;
+  const Log = _admin.findResource('Log');
+  const ModifiedResource = _admin.findResource(params.resourceId);
 
   if (!params.recordId || (onlyForPostMethod && !(method === 'post'))) {
     return response;
   }
 
   try {
-    const Log = _admin.findResource('Log');
-    const ModifiedResource = _admin.findResource(params.resourceId);
     const modifiedRecord = merge(
       await ModifiedResource.findOne(params.recordId),
       JSON.parse(JSON.stringify(context.record))

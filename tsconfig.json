@@ -12,8 +12,9 @@
     "noImplicitThis": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "baseUrl": "src",
+    "baseUrl": "./",
     "outDir": "lib",
     "allowSyntheticDefaultImports": true,
   },
+  "exclude": ["test"]
 }

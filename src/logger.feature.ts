@@ -3,7 +3,6 @@ import { createLogAction, rememberInitialRecord } from './log.action';
 
 const loggerFeature = (): FeatureType => {
   return buildFeature({
-    properties: {},
     actions: {
       new: {
         before: rememberInitialRecord,
