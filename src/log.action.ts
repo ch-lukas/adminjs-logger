@@ -13,6 +13,18 @@ export type CreateLogActionParams = {
   onlyForPostMethod?: boolean;
 };
 
+const getRecordTitle = modifiedRecord => {
+  switch (typeof modifiedRecord.title) {
+    case 'string':
+      return modifiedRecord.title;
+    case 'function':
+      return modifiedRecord.title();
+  }
+  return (
+    Object.values(modifiedRecord).find(v => typeof v === 'string') ?? 'No title'
+  );
+};
+
 export const createLogAction = ({
   onlyForPostMethod = false,
 }: CreateLogActionParams = {}): After<ActionResponse> => async (
@@ -31,8 +43,8 @@ export const createLogAction = ({
 
   try {
     const modifiedRecord = merge(
-      await ModifiedResource.findOne(params.recordId),
-      JSON.parse(JSON.stringify(context.record))
+      JSON.parse(JSON.stringify(context.record)),
+      await ModifiedResource.findOne(params.recordId)
     );
     if (!modifiedRecord) {
       return response;
@@ -43,16 +55,13 @@ export const createLogAction = ({
         ? {}
         : flat.flatten(JSON.parse(JSON.stringify(modifiedRecord.params)));
     await Log.create({
-      recordTitle:
-        typeof modifiedRecord.title === 'string'
-          ? modifiedRecord.title
-          : modifiedRecord.title(),
+      recordTitle: getRecordTitle(modifiedRecord),
       resource: params.resourceId,
       action: params.action,
       recordId:
         params.recordId ?? typeof modifiedRecord.id === 'string'
           ? modifiedRecord.id
-          : modifiedRecord.id(),
+          : modifiedRecord.id?.(),
       user: currentAdmin,
       difference: JSON.stringify(
         difference(
