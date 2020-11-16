@@ -41,6 +41,8 @@ export const createLogAction = ({
     return response;
   }
 
+  const currentUser = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
+
   try {
     const modifiedRecord = merge(
       JSON.parse(JSON.stringify(context.record)),
@@ -62,7 +64,7 @@ export const createLogAction = ({
         params.recordId ?? typeof modifiedRecord.id === 'string'
           ? modifiedRecord.id
           : modifiedRecord.id?.(),
-      user: currentAdmin,
+      user: currentUser,
       difference: JSON.stringify(
         difference(
           newParamsToCompare,
