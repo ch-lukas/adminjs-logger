@@ -1,5 +1,5 @@
 /**
- * @module @admin-bro/logger
+ * @module @adminjs/logger
  * @subcategory Features
  * @section modules
  */

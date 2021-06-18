@@ -1,4 +1,4 @@
-import { ResourceWithOptions } from 'admin-bro';
+import { ResourceWithOptions } from 'adminjs';
 import { bundleComponents } from './components/bundle';
 
 const { RECORD_DIFFERENCE, RECORD_LINK } = bundleComponents();

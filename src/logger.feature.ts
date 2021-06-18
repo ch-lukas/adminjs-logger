@@ -1,4 +1,4 @@
-import { buildFeature, FeatureType } from 'admin-bro';
+import { buildFeature, FeatureType } from 'adminjs';
 import { createLogAction, rememberInitialRecord } from './log.action';
 
 const loggerFeature = (): FeatureType => {

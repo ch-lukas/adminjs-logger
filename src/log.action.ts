@@ -1,4 +1,4 @@
-import { ActionResponse, After, Before, flat } from 'admin-bro';
+import { ActionResponse, After, Before, flat } from 'adminjs';
 import { merge } from 'lodash';
 import { difference } from './utils/difference';
 

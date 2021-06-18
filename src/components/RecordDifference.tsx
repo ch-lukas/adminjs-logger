@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { BasePropertyProps, flat } from 'admin-bro';
+import { BasePropertyProps, flat } from 'adminjs';
 import {
   FormGroup,
   Label,
@@ -8,7 +8,7 @@ import {
   TableBody,
   TableHead,
   TableRow,
-} from '@admin-bro/design-system';
+} from '@adminjs/design-system';
 import styled from 'styled-components';
 
 const Cell = styled(TableCell)`
