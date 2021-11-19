@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { BasePropertyProps, ViewHelpers } from 'admin-bro';
-import { FormGroup, Link } from '@admin-bro/design-system';
+import { BasePropertyProps, ViewHelpers } from 'adminjs';
+import { FormGroup, Link } from '@adminjs/design-system';
 
 const viewHelpers = new ViewHelpers();
 const RecordLink: FC<BasePropertyProps> = ({ record }) => {

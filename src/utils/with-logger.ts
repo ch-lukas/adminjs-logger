@@ -1,4 +1,4 @@
-import { Action, ActionResponse, After, Before } from 'admin-bro';
+import { Action, ActionResponse, After, Before } from 'adminjs';
 import { createLogAction, rememberInitialRecord } from '../log.action';
 
 export const withLogger = (
