@@ -25,55 +25,55 @@ const getRecordTitle = modifiedRecord => {
   );
 };
 
-export const createLogAction = ({
-  onlyForPostMethod = false,
-}: CreateLogActionParams = {}): After<ActionResponse> => async (
-  response,
-  request,
-  context
-) => {
-  const { currentAdmin, _admin } = context;
-  const { params, method } = request;
-  const Log = _admin.findResource('Log');
-  const ModifiedResource = _admin.findResource(params.resourceId);
+export const createLogAction =
+  ({
+    onlyForPostMethod = false,
+  }: CreateLogActionParams = {}): After<ActionResponse> =>
+  async (response, request, context) => {
+    const { currentAdmin, _admin } = context;
+    const { params, method } = request;
+    const Log = _admin.findResource('Log');
+    const ModifiedResource = _admin.findResource(params.resourceId);
 
-  if (!params.recordId || (onlyForPostMethod && !(method === 'post'))) {
-    return response;
-  }
-
-  const currentUser = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
-
-  try {
-    const modifiedRecord = merge(
-      JSON.parse(JSON.stringify(context.record)),
-      await ModifiedResource.findOne(params.recordId)
-    );
-    if (!modifiedRecord) {
+    if (!params.recordId || (onlyForPostMethod && !(method === 'post'))) {
       return response;
     }
 
-    const newParamsToCompare =
-      params.action === 'delete'
-        ? {}
-        : flat.flatten(JSON.parse(JSON.stringify(modifiedRecord.params)));
-    await Log.create({
-      recordTitle: getRecordTitle(modifiedRecord),
-      resource: params.resourceId,
-      action: params.action,
-      recordId:
-        params.recordId ?? typeof modifiedRecord.id === 'string'
-          ? modifiedRecord.id
-          : modifiedRecord.id?.(),
-      user: currentUser,
-      difference: JSON.stringify(
-        difference(
-          newParamsToCompare,
-          flat.flatten(JSON.parse(JSON.stringify(context.initialRecord.params)))
-        )
-      ),
-    });
-  } catch (e) {
-    console.error(e);
-  }
-  return response;
-};
+    const currentUser = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
+
+    try {
+      const modifiedRecord = merge(
+        JSON.parse(JSON.stringify(context.record)),
+        await ModifiedResource.findOne(params.recordId)
+      );
+      if (!modifiedRecord) {
+        return response;
+      }
+
+      const newParamsToCompare =
+        params.action === 'delete'
+          ? {}
+          : flat.flatten(JSON.parse(JSON.stringify(modifiedRecord.params)));
+      await Log.create({
+        recordTitle: getRecordTitle(modifiedRecord),
+        resource: params.resourceId,
+        action: params.action,
+        recordId:
+          params.recordId ?? typeof modifiedRecord.id === 'string'
+            ? modifiedRecord.id
+            : modifiedRecord.id?.(),
+        user: currentUser,
+        difference: JSON.stringify(
+          difference(
+            newParamsToCompare,
+            flat.flatten(
+              JSON.parse(JSON.stringify(context.initialRecord.params))
+            )
+          )
+        ),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    return response;
+  };
