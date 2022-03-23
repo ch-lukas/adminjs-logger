@@ -11,7 +11,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest",
-    "lint": "eslint './src/**/*'",
+    "lint": "eslint -c '.eslintrc.js' './src/**/*'",
     "check:all": "yarn lint && yarn build && yarn test"
   },
   "husky": {
@@ -20,23 +20,23 @@
     }
   },
   "peerDependencies": {
-    "adminjs": "^5.3.1",
-    "@adminjs/design-system": "^2.0.2"
+    "@adminjs/design-system": "^2.2.0",
+    "adminjs": "^5.7.4"
   },
   "devDependencies": {
-    "@adminjs/design-system": "^2.0.2",
+    "@adminjs/design-system": "^2.2.0",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@semantic-release/git": "^9.0.0",
     "@types/jest": "^26.0.14",
-    "@typescript-eslint/eslint-plugin": "^3.7.0",
-    "@typescript-eslint/parser": "^3.7.0",
-    "adminjs": "^5.3.1",
-    "eslint": "^7.5.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-import": "^2.22.0",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "adminjs": "^5.7.4",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.4",
+    "eslint-plugin-react": "^7.29.4",
     "husky": "^4.3.0",
     "jest": "^26.5.3",
     "prettier": "^2.0.5",

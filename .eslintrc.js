@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
@@ -16,6 +17,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/prop-types': 'off',
+    'semi': ['error', 'always'],
+    'quotes': ['error', 'single'],
   },
   ignorePatterns: ['node_modules', 'lib'],
 };

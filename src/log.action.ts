@@ -1,6 +1,9 @@
 import { ActionResponse, After, Before, flat } from 'adminjs';
 import { merge } from 'lodash';
+
 import { difference } from './utils/difference';
+import { getLogPropertyName } from './utils/get-log-property-name';
+import { LoggerFeatureOptions } from './logger.feature';
 
 export const rememberInitialRecord: Before = async (request, context) => {
   const id = context.record?.id();
@@ -9,8 +12,55 @@ export const rememberInitialRecord: Before = async (request, context) => {
   return request;
 };
 
+/**
+ * Mapping object for Log model
+ *
+ * @memberof module:@adminjs/logger
+ * @alias LoggerPropertiesMapping
+ */
+export type LoggerPropertiesMapping = {
+  /**
+   * Primary key of your Log model
+   */
+  id?: string;
+  /**
+   * Field to store logged record's id
+   */
+  recordId?: string;
+  /**
+   * Field to store logged record's title
+   */
+  recordTitle?: string;
+  /**
+   * Field to store changes between actions. This has to be a text type field
+   * or JSON/JSONB for databases which support this type
+   */
+  difference?: string;
+  /**
+   * Field to store the id of the user who triggered the action
+   */
+  user?: string;
+  /**
+   * Field to store the action's name
+   */
+  action?: string;
+  /**
+   * Field to store the resource's name
+   */
+  resource?: string;
+  /**
+   * Timestamp field indicating when the log has been created
+   */
+  createdAt?: string;
+  /**
+   * Timestamp field indicating when the log has been updated
+   */
+  updatedAt?: string;
+};
+
 export type CreateLogActionParams = {
   onlyForPostMethod?: boolean;
+  options?: LoggerFeatureOptions;
 };
 
 const getRecordTitle = modifiedRecord => {
@@ -28,18 +78,26 @@ const getRecordTitle = modifiedRecord => {
 export const createLogAction =
   ({
     onlyForPostMethod = false,
+    options = {},
   }: CreateLogActionParams = {}): After<ActionResponse> =>
   async (response, request, context) => {
+    const {
+      resourceName = 'Log',
+      propertiesMapping = {},
+      userIdAttribute,
+    } = options ?? {};
     const { currentAdmin, _admin } = context;
     const { params, method } = request;
-    const Log = _admin.findResource('Log');
+    const Log = _admin.findResource(resourceName);
     const ModifiedResource = _admin.findResource(params.resourceId);
 
-    if (!params.recordId || (onlyForPostMethod && !(method === 'post'))) {
+    if (!params.recordId || (onlyForPostMethod && method !== 'post')) {
       return response;
     }
 
-    const currentUser = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
+    let adminId;
+    if (userIdAttribute) adminId = currentAdmin?.[userIdAttribute];
+    else adminId = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
 
     try {
       const modifiedRecord = merge(
@@ -57,15 +115,16 @@ export const createLogAction =
               JSON.parse(JSON.stringify(modifiedRecord.params))
             );
       await Log.create({
-        recordTitle: getRecordTitle(modifiedRecord),
-        resource: params.resourceId,
-        action: params.action,
-        recordId:
+        [getLogPropertyName('recordTitle', propertiesMapping)]:
+          getRecordTitle(modifiedRecord),
+        [getLogPropertyName('resource', propertiesMapping)]: params.resourceId,
+        [getLogPropertyName('action', propertiesMapping)]: params.action,
+        [getLogPropertyName('recordId', propertiesMapping)]:
           params.recordId ?? typeof modifiedRecord.id === 'string'
             ? modifiedRecord.id
             : modifiedRecord.id?.(),
-        user: currentUser,
-        difference: JSON.stringify(
+        [getLogPropertyName('user', propertiesMapping)]: adminId,
+        [getLogPropertyName('difference', propertiesMapping)]: JSON.stringify(
           difference(
             newParamsToCompare,
             flat.flatten(
