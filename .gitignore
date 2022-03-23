@@ -121,3 +121,4 @@ dist
 /build
 /lib
 /types
+example/.adminjs

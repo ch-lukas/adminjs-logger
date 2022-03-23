@@ -12,6 +12,7 @@ Or visit [AdminJS](https://github.com/SoftwareBrothers/adminjs) github page.
 
 ## Usage
 
+See an example application in the repository: [Example App](https://github.com/SoftwareBrothers/adminjs-logger/tree/master/example)
 
 ## License
 
