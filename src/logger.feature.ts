@@ -43,6 +43,10 @@ const loggerFeature = (options: LoggerFeatureOptions): FeatureType => {
         before: rememberInitialRecord,
         after: createLogAction({ options }),
       },
+      bulkDelete: {
+        before: rememberInitialRecord,
+        after: createLogAction({ onlyForPostMethod: true, options }),
+      },
     },
   });
 };

@@ -1,14 +1,29 @@
-import { ActionResponse, After, Before, flat } from 'adminjs';
-import { merge } from 'lodash';
+import {
+  ActionContext,
+  ActionRequest,
+  ActionResponse,
+  After,
+  Before,
+  flat,
+} from 'adminjs';
 
 import { difference } from './utils/difference';
 import { getLogPropertyName } from './utils/get-log-property-name';
 import { LoggerFeatureOptions } from './logger.feature';
 
-export const rememberInitialRecord: Before = async (request, context) => {
-  const id = context.record?.id();
+export const rememberInitialRecord: Before = async (
+  request: ActionRequest,
+  context: ActionContext
+) => {
+  if (request.params.action === 'bulkDelete') {
+    context.initialRecords = request.query?.recordIds
+      ? await context.resource.findMany(request.query.recordIds.split(','))
+      : [];
+  } else {
+    const id = context.record?.id();
+    context.initialRecord = id ? await context.resource.findOne(id) : {};
+  }
 
-  context.initialRecord = id ? await context.resource.findOne(id) : {};
   return request;
 };
 
@@ -81,54 +96,90 @@ export const createLogAction =
     options = {},
   }: CreateLogActionParams = {}): After<ActionResponse> =>
   async (response, request, context) => {
+    const { records, record } = context;
+    const { params, method } = request;
+
+    if (
+      (onlyForPostMethod && method !== 'post') ||
+      Object.keys(record?.errors || {}).length
+    ) {
+      return response;
+    }
+
+    const persistLog = createPersistLogAction(request, context, options);
+
+    if (request.params.action === 'bulkDelete') {
+      await Promise.all(
+        (records || []).map(async record => {
+          const recordId = (await record.params).id;
+          await persistLog(
+            recordId,
+            record,
+            context.initialRecords.find(r => {
+              return r.params.id === recordId;
+            })
+          );
+        })
+      );
+    } else {
+      const recordId =
+        params.recordId ||
+        (typeof record?.params?.id === 'string'
+          ? record?.params?.id
+          : record?.params?.id?.());
+      if (recordId) {
+        await persistLog(recordId, context.record, context.initialRecord);
+      }
+    }
+
+    return response;
+  };
+
+const createPersistLogAction =
+  (request, context, options) => async (recordId, record, initialRecord) => {
+    const { currentAdmin, _admin } = context;
+    const { params } = request;
     const {
       resourceName = 'Log',
       propertiesMapping = {},
       userIdAttribute,
     } = options ?? {};
-    const { currentAdmin, _admin } = context;
-    const { params, method } = request;
+
     const Log = _admin.findResource(resourceName);
     const ModifiedResource = _admin.findResource(params.resourceId);
 
-    if (!params.recordId || (onlyForPostMethod && method !== 'post')) {
-      return response;
-    }
-
-    let adminId;
-    if (userIdAttribute) adminId = currentAdmin?.[userIdAttribute];
-    else adminId = currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
+    const adminId = userIdAttribute
+      ? currentAdmin?.[userIdAttribute]
+      : currentAdmin?.id ?? currentAdmin?._id ?? currentAdmin;
 
     try {
-      const modifiedRecord = merge(
-        JSON.parse(JSON.stringify(context.record)),
-        await ModifiedResource.findOne(params.recordId)
-      );
+      const modifiedRecord = await ModifiedResource.findOne(recordId);
       if (!modifiedRecord) {
-        return response;
+        return;
       }
 
-      const newParamsToCompare =
-        params.action === 'delete'
-          ? {}
-          : flat.flatten<any, any>(
-              JSON.parse(JSON.stringify(modifiedRecord.params))
-            );
+      const newParamsToCompare = ['delete', 'bulkDelete'].includes(
+        params.action
+      )
+        ? {}
+        : flat.flatten<object, object>(
+            JSON.parse(JSON.stringify(modifiedRecord.params))
+          );
+
       await Log.create({
         [getLogPropertyName('recordTitle', propertiesMapping)]:
           getRecordTitle(modifiedRecord),
         [getLogPropertyName('resource', propertiesMapping)]: params.resourceId,
         [getLogPropertyName('action', propertiesMapping)]: params.action,
-        [getLogPropertyName('recordId', propertiesMapping)]:
-          params.recordId ?? typeof modifiedRecord.id === 'string'
-            ? modifiedRecord.id
-            : modifiedRecord.id?.(),
+        [getLogPropertyName('recordId', propertiesMapping)]: recordId,
         [getLogPropertyName('user', propertiesMapping)]: adminId,
         [getLogPropertyName('difference', propertiesMapping)]: JSON.stringify(
           difference(
             newParamsToCompare,
             flat.flatten(
-              JSON.parse(JSON.stringify(context.initialRecord.params))
+              initialRecord?.params
+                ? JSON.parse(JSON.stringify(await initialRecord.params))
+                : {}
             )
           )
         ),
@@ -136,5 +187,4 @@ export const createLogAction =
     } catch (e) {
       console.error(e);
     }
-    return response;
   };
