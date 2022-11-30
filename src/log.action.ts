@@ -176,10 +176,11 @@ const createPersistLogAction =
         record ?? (await ModifiedResource.findOne(String(recordId))) ?? null;
 
       const newParamsToCompare = ['delete', 'bulkDelete'].includes(action.name)
-        ? {}
-        : flat.flatten<object, object>(
+        ? ({} as Record<string, string>)
+        : (flat.flatten<object, object>(
             JSON.parse(JSON.stringify(modifiedRecord?.params ?? {}))
-          );
+          ) as Record<string, string>);
+
       const logParams = {
         [getLogPropertyName('recordTitle', propertiesMapping)]: getRecordTitle(
           modifiedRecord,
